@@ -24,4 +24,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 8000  # Application port
 EXPOSE 8001  # Prometheus metrics port
 
-CMD ["gunicorn", "-b", "0.0.0.0:8000", "myapp:app"]
+CMD ["gunicorn", "-b", "0.0.0.0:8000", "wsgi:app"]
