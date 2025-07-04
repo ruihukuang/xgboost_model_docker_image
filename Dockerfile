@@ -15,9 +15,6 @@ RUN apt-get update && apt-get install -y \
 # Install Python dependencies
 RUN pip install gunicorn flask  prometheus_client psutil
 
-# Copy the requirements.txt file into the container
-COPY scripts_model/requirements_Python.txt  /
-
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
