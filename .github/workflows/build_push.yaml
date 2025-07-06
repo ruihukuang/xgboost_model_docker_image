@@ -20,6 +20,24 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
+    - name: Check CloudFormation Permissions
+      run: |
+        if aws cloudformation describe-stacks; then
+          echo "User has permissions to describe stacks."
+        else
+          echo "User does not have permissions to describe stacks."
+          exit 1
+        fi
+    
+    - name: Create IAM Policy
+      run: |
+        POLICY_ARN=$(aws iam create-policy --policy-name MyCustomPolicy_Cloudformation_IAM --policy-document file://path/to/your/policy.json --query 'Policy.Arn' --output text)
+        echo "POLICY_ARN=$POLICY_ARN" >> $GITHUB_ENV
+
+    - name: Attach IAM Policy
+      run: |
+        aws iam attach-user-policy --user-name Janice --policy-arn ${{ env.POLICY_ARN }}
+    
     - name: Deploy CloudFormation Stack to enable ECR operations
       run: |
         aws cloudformation deploy \
