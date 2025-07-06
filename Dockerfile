@@ -1,7 +1,5 @@
-ARG ECR_REGISTRY
-ARG ECR_REPOSITORY
 # Use the Python 3.11 image from ECR
-FROM ${ECR_REGISTRY}/v3z5t7a3/${ECR_REPOSITORY}:python-3.11
+FROM public.ecr.aws/v3z5t7a3/my_repo_xgboost_test:python-3.11
 
 WORKDIR /app
 
