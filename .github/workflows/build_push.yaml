@@ -58,10 +58,15 @@ jobs:
     - name: Check if a basic python Image Exists in ECR
       id: check_image
       run: |
-        aws ecr describe-images --repository-name ${{ secrets.RESPOSITORY_NAME }} --image-ids imageTag=python-3.11 --region ${{ secrets.AWS_REGION }} || echo "Image not found"
+        set -e
+        if aws ecr describe-images --repository-name ${{ secrets.REPOSITORY_NAME }} --image-ids imageTag=python-3.11 --region ${{ secrets.AWS_REGION }}; then
+          echo "image_exists=true" >> $GITHUB_ENV
+        else
+          echo "image_exists=false" >> $GITHUB_ENV
+        fi
 
     - name: Pull, Tag, and Push if Image Not Found
-      if: steps.check_image.outputs.image_exists == 'false'
+      if: env.image_exists == 'false'
       env:
         ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
         ECR_REPOSITORY: ${{ secrets.RESPOSITORY_NAME }} 
