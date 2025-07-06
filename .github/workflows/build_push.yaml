@@ -47,10 +47,14 @@ jobs:
     - name: Check if ECR Repository Exists
       id: check_repo
       run: |
-        aws ecr describe-repositories --repository-names ${{ secrets.RESPOSITORY_NAME }} --region ${{ secrets.AWS_REGION }}  || echo "Repository does not exist"
+        if aws ecr describe-repositories --repository-names ${{ secrets.REPOSITORY_NAME }} --region ${{ secrets.AWS_REGION }}; then
+          echo "repository_exists=true" >> $GITHUB_ENV
+        else
+          echo "repository_exists=false" >> $GITHUB_ENV
+        fi
         
     - name: Create a public ECR Repository for model artifacts
-      if: steps.check_repo.outputs.repository_exists == 'false'
+      if: env.repository_exists == 'false'
       run: |
         aws ecr create-repository --repository-name ${{ secrets.RESPOSITORY_NAME }} --region ${{ secrets.AWS_REGION }} \
             --repository-policy-text '{
