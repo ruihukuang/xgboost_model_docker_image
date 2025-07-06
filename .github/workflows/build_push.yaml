@@ -58,22 +58,23 @@ jobs:
     - name: Check if a basic python Image Exists in ECR
       id: check_image
       run: |
-        aws ecr describe-images --repository-name ${{ secrets.ECR_REPOSITORY }} --image-ids imageTag=python-3.11 --region ${{ secrets.AWS_REGION }} || echo "Image not found"
+        aws ecr describe-images --repository-name ${{ secrets.RESPOSITORY_NAME }} --image-ids imageTag=python-3.11 --region ${{ secrets.AWS_REGION }} || echo "Image not found"
 
     - name: Pull, Tag, and Push if Image Not Found
       if: steps.check_image.outputs.image_exists == 'false'
+      env:
+        ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+        ECR_REPOSITORY: ${{ secrets.RESPOSITORY_NAME }} 
       run: |
         docker pull python:3.11
-        docker tag python:3.11 ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:python-3.11
-        docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:python-3.11
+        docker tag python:3.11 $ECR_REGISTRY/$ECR_REPOSITORY:python-3.11
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:python-3.11
 
     - name: Build, tag, and push image to Amazon ECR
       env:
         ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
         ECR_REPOSITORY: ${{ secrets.RESPOSITORY_NAME }} 
         IMAGE_TAG: ${{ github.sha }}_xgboost
-        Account_id: ${{ secrets.AWS_ACCOUNT_ID }}
-        region: ${{ secrets.AWS_REGION }}
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg Account_id=$Account_id --build-arg region=$region --build-arg ECR_REPOSITORY=$ECR_REPOSITORY  .
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg ECR_REGISTRY=$ECR_REGISTRY --build-arg ECR_REPOSITORY=$ECR_REPOSITORY   .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
