@@ -103,8 +103,7 @@ jobs:
         ECR_REGISTRY: public.ecr.aws
         ECR_REPOSITORY: ${{ secrets.RESPOSITORY_NAME }} 
         IMAGE_TAG: ${{ github.sha }}_xgboost
-        REGION: ${{ secrets.AWS_REGION }}
       run: |
-        docker build -t $IMAGE_TAG --build-arg ECR_REGISTRY=$ECR_REGISTRY --build-arg ECR_REPOSITORY=$ECR_REPOSITORY  .
+        docker build -t $IMAGE_TAG  .
         docker tag $IMAGE_TAG $ECR_REGISTRY/v3z5t7a3/$ECR_REPOSITORY:$IMAGE_TAG
         docker push $ECR_REGISTRY/v3z5t7a3/$ECR_REPOSITORY:$IMAGE_TAG
