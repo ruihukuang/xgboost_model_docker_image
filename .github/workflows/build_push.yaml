@@ -47,13 +47,27 @@ jobs:
     - name: Check if ECR Repository Exists
       id: check_repo
       run: |
-        REPO_NAME="your-repository-name"
         aws ecr describe-repositories --repository-names ${{ secrets.RESPOSITORY_NAME }} --region ${{ secrets.AWS_REGION }}  || echo "Repository does not exist"
         
-    - name: Create a ECR Repository for model artifacts
+    - name: Create a public ECR Repository for model artifacts
       if: steps.check_repo.outputs.repository_exists == 'false'
       run: |
-        aws ecr create-repository --repository-name ${{ secrets.RESPOSITORY_NAME }} --region ${{ secrets.AWS_REGION }}
+        aws ecr create-repository --repository-name ${{ secrets.RESPOSITORY_NAME }} --region ${{ secrets.AWS_REGION }} \
+            --repository-policy-text '{
+            "Version": "2008-10-17",
+            "Statement": [
+              {
+                "Sid": "AllowPublicRead",
+                "Effect": "Allow",
+                "Principal": "*",
+                "Action": [
+                  "ecr:GetDownloadUrlForLayer",
+                  "ecr:BatchGetImage",
+                  "ecr:BatchCheckLayerAvailability"
+                ]
+              }
+            ]
+          }'        
 
     - name: Check if a basic python Image Exists in ECR
       id: check_image
