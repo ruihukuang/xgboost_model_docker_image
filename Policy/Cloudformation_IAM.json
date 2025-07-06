@@ -13,7 +13,8 @@
         "iam:AttachUserPolicy",
         "iam:DetachUserPolicy",
         "iam:CreatePolicy",
-        "iam:DeletePolicy"
+        "iam:DeletePolicy",
+        "iam:ListPolicies"
       ],
       "Resource": "*"
     }
