@@ -18,7 +18,9 @@ RUN pip install gunicorn flask  prometheus_client psutil
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements_Python.txt
 
-EXPOSE 8000  # Application port
-EXPOSE 8001  # Prometheus metrics port
+# Application port
+EXPOSE 8000
+# Prometheus metrics port
+EXPOSE 8001  
 
 CMD ["gunicorn", "-b", "0.0.0.0:8000", "wsgi:app"]
