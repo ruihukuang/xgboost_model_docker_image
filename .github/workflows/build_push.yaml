@@ -92,7 +92,10 @@ jobs:
       env:
         ECR_REGISTRY: public.ecr.aws
         ECR_REPOSITORY: ${{ secrets.RESPOSITORY_NAME }} 
+        REGION: ${{ secrets.AWS_REGION }}
       run: |
+        # Log in to Amazon ECR Public
+        aws ecr-public get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
         docker pull python:3.11
         docker tag python:3.11 $ECR_REGISTRY/$ECR_REPOSITORY:python-3.11
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:python-3.11
@@ -102,6 +105,9 @@ jobs:
         ECR_REGISTRY: public.ecr.aws
         ECR_REPOSITORY: ${{ secrets.RESPOSITORY_NAME }} 
         IMAGE_TAG: ${{ github.sha }}_xgboost
+        REGION: ${{ secrets.AWS_REGION }}
       run: |
+        # Log in to Amazon ECR Public
+        aws ecr-public get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg ECR_REGISTRY=$ECR_REGISTRY --build-arg ECR_REPOSITORY=$ECR_REPOSITORY   .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
