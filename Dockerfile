@@ -1,8 +1,8 @@
 ARG Account_id
 ARG region
-
+ARG repository
 # Use the Python 3.11 image from ECR
-FROM ${Account_id}.dkr.ecr.${region}.amazonaws.com/python:3.11
+FROM ${Account_id}.dkr.ecr.${region}.amazonaws.com/${repository}:python-3.11
 
 WORKDIR /app
 
