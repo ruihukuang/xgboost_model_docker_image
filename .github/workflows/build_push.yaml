@@ -44,7 +44,7 @@ jobs:
       run: |
         aws cloudformation deploy \
           --template-file CloudFormation/Policy_ECR_IAM.yaml \
-          --stack-name Enable_ECR_Operation \
+          --stack-name EnableECRStack \
           --region ${{ secrets.AWS_REGION }} \
           --capabilities CAPABILITY_NAMED_IAM
       env:
