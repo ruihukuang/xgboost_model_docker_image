@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
 RUN pip install gunicorn flask  prometheus_client psutil
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements_Python.txt
+RUN pip install --no-cache-dir -r scripts_model/requirements_Python.txt
 
 # Application port
 EXPOSE 8000
