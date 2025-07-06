@@ -105,7 +105,6 @@ jobs:
         IMAGE_TAG: ${{ github.sha }}_xgboost
         REGION: ${{ secrets.AWS_REGION }}
       run: |
-        # Log in to Amazon ECR Public
-        aws ecr-public get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
-        docker build -t $ECR_REGISTRY/v3z5t7a3/$ECR_REPOSITORY:$IMAGE_TAG --build-arg ECR_REGISTRY=$ECR_REGISTRY --build-arg ECR_REPOSITORY=$ECR_REPOSITORY   .
+        docker build -t $IMAGE_TAG --build-arg ECR_REGISTRY=$ECR_REGISTRY --build-arg ECR_REPOSITORY=$ECR_REPOSITORY  .
+        docker tag $IMAGE_TAG $ECR_REGISTRY/v3z5t7a3/$ECR_REPOSITORY:$IMAGE_TAG
         docker push $ECR_REGISTRY/v3z5t7a3/$ECR_REPOSITORY:$IMAGE_TAG
