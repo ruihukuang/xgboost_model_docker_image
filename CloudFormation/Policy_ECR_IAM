@@ -1,0 +1,29 @@
+Resources:
+  JaniceUser:
+    Type: "AWS::IAM::User"
+    Properties:
+      UserName: "Janice"
+
+  JanicePolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: "JaniceECRPolicy"
+      Users:
+        - Ref: JaniceUser
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Action:
+              - "ecr:GetAuthorizationToken"
+              - "ecr:BatchCheckLayerAvailability"
+              - "ecr:GetDownloadUrlForLayer"
+              - "ecr:BatchGetImage"
+              - "ecr:DescribeRepositories"
+              - "ecr:ListImages"
+              - "ecr:DescribeImages"
+              - "ecr:InitiateLayerUpload"
+              - "ecr:UploadLayerPart"
+              - "ecr:CompleteLayerUpload"
+              - "ecr:PutImage"
+            Resource: "*"
