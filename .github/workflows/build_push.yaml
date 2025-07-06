@@ -81,7 +81,7 @@ jobs:
       id: check_image
       run: |
         set -e
-        if aws ecr describe-images --repository-name ${{ secrets.REPOSITORY_NAME }} --image-ids imageTag=python-3.11 --region ${{ secrets.AWS_REGION }}; then
+        if aws ecr describe-images --repository-name ${{ secrets.RESPOSITORY_NAME }} --image-ids imageTag=python-3.11 --region ${{ secrets.AWS_REGION }}; then
           echo "image_exists=true" >> $GITHUB_ENV
         else
           echo "image_exists=false" >> $GITHUB_ENV
