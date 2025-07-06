@@ -39,10 +39,6 @@ jobs:
         fi
 
         aws iam attach-user-policy --user-name Janice --policy-arn $POLICY_ARN   
-
-    - name : Delete the stack if ROLLBACK_COMPLETE state cannot be updated directly
-      run: !
-        aws cloudformation delete-stack --stack-name EnableECRStack
     
     - name: Deploy CloudFormation Stack to enable ECR operations
       run: |
