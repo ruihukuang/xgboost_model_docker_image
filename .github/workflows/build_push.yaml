@@ -53,25 +53,29 @@ jobs:
           echo "repository_exists=false" >> $GITHUB_ENV
         fi
         
-    - name: Create a public ECR Repository for model artifacts
+    - name: Create a Public ECR Repository for Model Artifacts
       if: env.repository_exists == 'false'
       run: |
-        aws ecr create-repository --repository-name ${{ secrets.RESPOSITORY_NAME }} --region ${{ secrets.AWS_REGION }} \
-            --repository-policy-text '{
-            "Version": "2008-10-17",
-            "Statement": [
-              {
-                "Sid": "AllowPublicRead",
-                "Effect": "Allow",
-                "Principal": "*",
-                "Action": [
-                  "ecr:GetDownloadUrlForLayer",
-                  "ecr:BatchGetImage",
-                  "ecr:BatchCheckLayerAvailability"
-                ]
-              }
-            ]
-          }'        
+        aws ecr create-repository --repository-name ${{ secrets.REPOSITORY_NAME }} --region ${{ secrets.AWS_REGION }}
+
+    - name: Set Repository Policy
+      if: env.repository_exists == 'false'
+      run: |
+        aws ecr set-repository-policy --repository-name ${{ secrets.REPOSITORY_NAME }} --region ${{ secrets.AWS_REGION }} --policy-text '{
+          "Version": "2008-10-17",
+          "Statement": [
+            {
+              "Sid": "AllowPublicRead",
+              "Effect": "Allow",
+              "Principal": "*",
+              "Action": [
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage",
+                "ecr:BatchCheckLayerAvailability"
+              ]
+            }
+          ]
+        }'     
 
     - name: Check if a basic python Image Exists in ECR
       id: check_image
