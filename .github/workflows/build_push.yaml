@@ -39,13 +39,6 @@ jobs:
         fi
 
         aws iam attach-user-policy --user-name Janice --policy-arn $POLICY_ARN   
-    
-    - name: Deploy CloudFormation Stack to enable ECR operations
-      run: |
-        aws cloudformation deploy \
-          --template-file CloudFormation/Policy_ECR_IAM.yaml \
-          --stack-name EnableECRStack \
-          --capabilities CAPABILITY_NAMED_IAM
 
     - name: Log in to Amazon ECR
       run: |
