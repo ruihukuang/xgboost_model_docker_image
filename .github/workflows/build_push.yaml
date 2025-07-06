@@ -47,7 +47,7 @@ jobs:
     - name: Check if ECR Repository Exists
       id: check_repo
       run: |
-        if aws ecr describe-repositories --repository-names ${{ secrets.REPOSITORY_NAME }} --region ${{ secrets.AWS_REGION }}; then
+        if aws ecr describe-repositories --repository-names ${{ secrets.RESPOSITORY_NAME }} --region ${{ secrets.AWS_REGION }}; then
           echo "repository_exists=true" >> $GITHUB_ENV
         else
           echo "repository_exists=false" >> $GITHUB_ENV
@@ -56,12 +56,12 @@ jobs:
     - name: Create a Public ECR Repository for Model Artifacts
       if: env.repository_exists == 'false'
       run: |
-        aws ecr create-repository --repository-name ${{ secrets.REPOSITORY_NAME }} --region ${{ secrets.AWS_REGION }}
+        aws ecr create-repository --repository-name ${{ secrets.RESPOSITORY_NAME }} --region ${{ secrets.AWS_REGION }}
 
     - name: Set Repository Policy
       if: env.repository_exists == 'false'
       run: |
-        aws ecr set-repository-policy --repository-name ${{ secrets.REPOSITORY_NAME }} --region ${{ secrets.AWS_REGION }} --policy-text '{
+        aws ecr set-repository-policy --repository-name ${{ secrets.RESPOSITORY_NAME }} --region ${{ secrets.AWS_REGION }} --policy-text '{
           "Version": "2008-10-17",
           "Statement": [
             {
