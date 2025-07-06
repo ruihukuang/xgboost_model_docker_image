@@ -31,7 +31,7 @@ jobs:
     
     - name: Create IAM Policy
       run: |
-        POLICY_ARN=$(aws iam create-policy --policy-name MyCustomPolicy_Cloudformation_IAM --policy-document file://path/to/your/policy.json --query 'Policy.Arn' --output text)
+        POLICY_ARN=$(aws iam create-policy --policy-name MyCustomPolicy_Cloudformation_IAM --policy-document file://Policy/Cloudformation_IAM.json --query 'Policy.Arn' --output text) 
         echo "POLICY_ARN=$POLICY_ARN" >> $GITHUB_ENV
 
     - name: Attach IAM Policy
