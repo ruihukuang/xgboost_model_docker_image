@@ -42,7 +42,7 @@ jobs:
 
     - name: Log in to Amazon ECR
       run: |
-        aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+        aws ecr-public  get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin public.ecr.aws
 
     - name: Check if ECR Repository Exists
       id: check_repo
@@ -90,7 +90,7 @@ jobs:
     - name: Pull, Tag, and Push if Image Not Found
       if: env.image_exists == 'false'
       env:
-        ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+        ECR_REGISTRY: public.ecr.aws
         ECR_REPOSITORY: ${{ secrets.RESPOSITORY_NAME }} 
       run: |
         docker pull python:3.11
@@ -99,7 +99,7 @@ jobs:
 
     - name: Build, tag, and push image to Amazon ECR
       env:
-        ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+        ECR_REGISTRY: public.ecr.aws
         ECR_REPOSITORY: ${{ secrets.RESPOSITORY_NAME }} 
         IMAGE_TAG: ${{ github.sha }}_xgboost
       run: |
