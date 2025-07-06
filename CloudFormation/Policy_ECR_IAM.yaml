@@ -1,9 +1,9 @@
 Resources:
   # Define the IAM Policy
-  MyPolicy:
+  CloudFormationIAMECRPolicy:
     Type: "AWS::IAM::Policy"
     Properties:
-      PolicyName: "MyCustomPolicy"
+      PolicyName: "CloudFormationIAMPolicyECR"
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -21,11 +21,18 @@ Resources:
               - "ecr:CompleteLayerUpload"
               - "ecr:PutImage"
             Resource: "*"
-      Users:
-        - Ref: ExistingUser
+
 
   # Reference the existing IAM user
   ExistingUser:
     Type: "AWS::IAM::User"
     Properties:
       UserName: "Janice"
+
+    # Attach the policy to the user
+  AttachPolicyToUser:
+    Type: "AWS::IAM::UserToGroupAddition"
+    Properties:
+      GroupName: !Ref ExistingUser
+      Users:
+        - !Ref CloudFormationIAMECRPolicy
