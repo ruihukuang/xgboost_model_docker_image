@@ -24,7 +24,7 @@ jobs:
       run: |
         aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
-    - name: Log in to Amazon ECR
+    - name: Create a ECR Repository for model artifacts
       run: |
         aws ecr create-repository --repository-name ${{ secrets.repository_name }} --region ${{ secrets.AWS_REGION }}
 
