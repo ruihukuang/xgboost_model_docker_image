@@ -20,6 +20,12 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
+    - name: Deploy CloudFormation Stack to enable ECR operations
+      run: |
+        aws cloudformation deploy \
+          --template-file CloudFormation/Policy_ECR_IAM.yaml \
+          --stack-name Enable_ECR_Operation
+
     - name: Log in to Amazon ECR
       run: |
         aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
