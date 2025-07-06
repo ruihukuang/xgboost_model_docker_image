@@ -30,4 +30,4 @@ Resources:
           - Effect: "Allow"
             Action:
               - "cloudformation:DescribeStacks"
-            Resource: "arn:aws:cloudformation:***:***:stack/Enable_ECR_Operation/*"
+            Resource: "arn:aws:cloudformation:${AWS_REGION}:${AWS_ACCOUNT_ID}:stack/Enable_ECR_Operation/*"
