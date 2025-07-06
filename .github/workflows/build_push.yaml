@@ -52,11 +52,11 @@ jobs:
       env:
         ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
         ECR_REPOSITORY: ${{ secrets.repository_name }} 
-        IMAGE_TAG: ${{ github.sha }}_xgboost
+        IMAGE_TAG: ${{ github.sha }}
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
     - name: Display Commit SHA
       run: |
-        echo "The commit SHA is ${{ github.sha }}_xgboost"
+        echo "The commit SHA is ${{ github.sha }}"
