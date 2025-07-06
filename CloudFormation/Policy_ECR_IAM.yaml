@@ -1,15 +1,9 @@
 Resources:
-  JaniceUser:
-    Type: "AWS::IAM::User"
-    Properties:
-      UserName: "Janice"
-
-  JanicePolicy:
+  # Define the IAM Policy
+  MyPolicy:
     Type: "AWS::IAM::Policy"
     Properties:
-      PolicyName: "JaniceECRPolicy"
-      Users:
-        - Ref: JaniceUser
+      PolicyName: "MyCustomPolicy"
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -27,3 +21,11 @@ Resources:
               - "ecr:CompleteLayerUpload"
               - "ecr:PutImage"
             Resource: "*"
+      Users:
+        - Ref: ExistingUser
+
+  # Reference the existing IAM user
+  ExistingUser:
+    Type: "AWS::IAM::User"
+    Properties:
+      UserName: "Janice"
