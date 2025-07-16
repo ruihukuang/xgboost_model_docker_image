@@ -111,7 +111,7 @@ jobs:
           echo "$matching_images"
               # Loop through each matching image tag and delete it
           for tag in $matching_images; do
-            aws ecr batch-delete-image --repository-name ${{ env.ECR_REPOSITORY }} --region us-east-1 --image-ids imageTag="$tag"
+            aws ecr-public batch-delete-image --repository-name ${{ env.ECR_REPOSITORY }} --region us-east-1 --image-ids imageTag="$tag"
           done
          else
            echo "No images found with tags ending in _xgboost."
