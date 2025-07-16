@@ -47,7 +47,7 @@ jobs:
 
     - name: Log in to Amazon ECR
       run: |
-        aws ecr-public  get-login-password | docker login --username AWS --password-stdin public.ecr.aws/v3z5t7a3
+        aws ecr-public  get-login-password | docker login --username AWS --password-stdin public.ecr.aws
 
     - name: Check if ECR Repository Exists
       id: check_repo
