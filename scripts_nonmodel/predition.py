@@ -3,6 +3,8 @@ import json
 import os
 from prometheus_client import start_http_server, Summary, Gauge, Counter
 import psutil
+# Import the function from score.py
+from scripts_model.score import Python_function
 
 app = Flask(__name__)
 
