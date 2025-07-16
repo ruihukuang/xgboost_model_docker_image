@@ -83,35 +83,24 @@ jobs:
           ]
         }'     
 
-    - name: Check if a basic python Image Exists in ECR
+    - name: Check if a basic python image exists in ECR
       id: check_image
       run: |
         set -e
-        if aws ecr-public describe-images --repository-name ${{ env.ECR_REPOSITORY }} --region us-east-1 --image-ids imageTag=python-3.11 --region ${{ env.REGION }} ; then
+        if aws ecr-public describe-images --repository-name ${{ env.ECR_REPOSITORY }} --region us-east-1 --image-ids imageTag=python-3.11 --region us-east-1 ; then
           echo "image_exists=true" >> $GITHUB_ENV
         else
           echo "image_exists=false" >> $GITHUB_ENV
         fi
 
-    - name: Pull, Tag, and Push if Image Not Found
+    - name: Pull, Tag, and Push if a basic python image does not exist in ECR
       if: env.image_exists == 'false'
       run: |   
         docker pull python:3.11
         docker tag python:3.11 ${{ env.ECR_REGISTRY }}/v3z5t7a3/${{ env.ECR_REPOSITORY }}:python-3.11
         docker push ${{ env.ECR_REGISTRY }}/v3z5t7a3/${{ env.ECR_REPOSITORY }}:python-3.11
-
-    - name: Check if a basic python Image Exists in ECR
-      id: check_image_model
-      run: |
-        set -e
-        if aws ecr-public describe-images --repository-name ${{ env.ECR_REPOSITORY }} --region us-east-1 --image-ids imageTag=python-3.11  ; then
-          echo "image_exists_model=true" >> $GITHUB_ENV
-        else
-          echo "image_exists_model=false" >> $GITHUB_ENV
-        fi
         
-    - name: check image tages if an image exists
-      if: env.image_exists_model == 'true'
+    - name: check if an docker image for model artifacts exists and act accordingly
       run: |
         output=$(aws ecr describe-images --repository-name "${{ env.ECR_REPOSITORY }}" --region us-east-1 )
         matching_images=$(echo "$output" | jq -r '.imageDetails[].imageTags[] | select(endswith("_xgboost"))')
@@ -125,7 +114,7 @@ jobs:
            echo "No images found with tags ending in _xgboost."
         fi
         
-    - name: Build, tag, and push image to Amazon ECR
+    - name: Build, tag, and push image to Amazon ECR if an docker image for model artifacts does not exist
       env:
         IMAGE_TAG: ${{ github.sha }}_xgboost
       run: |
