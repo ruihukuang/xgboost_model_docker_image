@@ -1,9 +1,7 @@
 name: Build and Push Docker Image to ECR
 
 on:
-  push:
-    branches:
-      - main  # Change this to your default branch
+  workflow_dispatch:
 
 env:
   ECR_REGISTRY: public.ecr.aws
