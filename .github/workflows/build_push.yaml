@@ -5,6 +5,11 @@ on:
     branches:
       - main  # Change this to your default branch
 
+env:
+  ECR_REGISTRY: public.ecr.aws
+  ECR_REPOSITORY: ${{ secrets.RESPOSITORY_NAME }} 
+  REGION: ${{ secrets.AWS_REGION }}
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -23,7 +28,9 @@ jobs:
     - name: Run AWS CLI Command
       run: |
         aws s3 ls
-  
+
+    - name: Install jq
+      run: sudo apt-get install jq
   
     - name: Update IAM Policy
       run: |
@@ -42,12 +49,12 @@ jobs:
 
     - name: Log in to Amazon ECR
       run: |
-        aws ecr-public  get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin public.ecr.aws/v3z5t7a3
+        aws ecr-public  get-login-password --region $REGION | docker login --username AWS --password-stdin public.ecr.aws/v3z5t7a3
 
     - name: Check if ECR Repository Exists
       id: check_repo
       run: |
-        if aws ecr-public describe-repositories --repository-names ${{ secrets.RESPOSITORY_NAME }} --region ${{ secrets.AWS_REGION }}; then
+        if aws ecr-public describe-repositories --repository-names $ECR_REPOSITORY  --region $REGION; then
           echo "repository_exists=true" >> $GITHUB_ENV
         else
           echo "repository_exists=false" >> $GITHUB_ENV
@@ -56,12 +63,12 @@ jobs:
     - name: Create a Public ECR Repository for Model Artifacts
       if: env.repository_exists == 'false'
       run: |
-        aws ecr-public create-repository --repository-name ${{ secrets.RESPOSITORY_NAME }} --region ${{ secrets.AWS_REGION }}
+        aws ecr-public create-repository --repository-name $ECR_REPOSITORY --region $REGION
 
     - name: Set Repository Policy
       if: env.repository_exists == 'false'
       run: |
-        aws ecr-public set-repository-policy --repository-name ${{ secrets.RESPOSITORY_NAME }} --region ${{ secrets.AWS_REGION }} --policy-text '{
+        aws ecr-public set-repository-policy --repository-name $ECR_REPOSITORY --region $REGION --policy-text '{
           "Version": "2008-10-17",
           "Statement": [
             {
@@ -81,7 +88,7 @@ jobs:
       id: check_image
       run: |
         set -e
-        if aws ecr-public describe-images --repository-name ${{ secrets.RESPOSITORY_NAME }} --image-ids imageTag=python-3.11 --region ${{ secrets.AWS_REGION }}; then
+        if aws ecr-public describe-images --repository-name $ECR_REPOSITORY --image-ids imageTag=python-3.11 --region $REGION; then
           echo "image_exists=true" >> $GITHUB_ENV
         else
           echo "image_exists=false" >> $GITHUB_ENV
@@ -89,19 +96,38 @@ jobs:
 
     - name: Pull, Tag, and Push if Image Not Found
       if: env.image_exists == 'false'
-      env:
-        ECR_REGISTRY: public.ecr.aws
-        ECR_REPOSITORY: ${{ secrets.RESPOSITORY_NAME }} 
-        REGION: ${{ secrets.AWS_REGION }}
       run: |
         docker pull python:3.11
         docker tag python:3.11 $ECR_REGISTRY/v3z5t7a3/$ECR_REPOSITORY:python-3.11
         docker push $ECR_REGISTRY/v3z5t7a3/$ECR_REPOSITORY:python-3.11
 
+    - name: Check if a basic python Image Exists in ECR
+      id: check_image_model
+      run: |
+        set -e
+        if aws ecr-public describe-images --repository-name $ECR_REPOSITORY --image-ids imageTag=python-3.11 --region $REGION; then
+          echo "image_exists_model=true" >> $GITHUB_ENV
+        else
+          echo "image_exists_model=false" >> $GITHUB_ENV
+        fi
+        
+    - name: check image tages if an image exists
+      if: env.image_exists_model == 'true'
+      run: |
+        output=$(aws ecr describe-images --repository-name "$ECR_REPOSITORY" --region "$REGION")
+        matching_images=$(echo "$output" | jq -r '.imageDetails[].imageTags[] | select(endswith("_xgboost"))')
+
+        # Check if any matching images were found
+        if [ -n "$matching_images" ]; then
+          echo "Found images with tags ending in _xgboost:"
+          echo "$matching_images"
+          aws ecr batch-delete-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$matching_images --region $REGION
+         else
+           echo "No images found with tags ending in _xgboost."
+        fi
+        
     - name: Build, tag, and push image to Amazon ECR
       env:
-        ECR_REGISTRY: public.ecr.aws
-        ECR_REPOSITORY: ${{ secrets.RESPOSITORY_NAME }} 
         IMAGE_TAG: ${{ github.sha }}_xgboost
       run: |
         docker build -t $IMAGE_TAG  .
