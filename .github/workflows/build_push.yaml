@@ -47,6 +47,7 @@ jobs:
 
     - name: Log in to Amazon ECR
       run: |
+        docker logout public.ecr.aws
         docker login -u AWS -p $(aws ecr get-login-password --region ${{ env.REGION }}) public.ecr.aws/v3z5t7a3
 
     - name: Check if ECR Repository Exists
