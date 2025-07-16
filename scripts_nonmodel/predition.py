@@ -4,7 +4,7 @@ import os
 from prometheus_client import start_http_server, Summary, Gauge, Counter
 import psutil
 # Import the function from score.py
-from scripts_model.score import Python_function
+from scripts_model.score import run_xgboost
 
 app = Flask(__name__)
 
@@ -59,7 +59,7 @@ def invocations():
         else:
             raise ValueError(f"Unsupported Content-Type: {content_type}")
 
-        r_result = Python_function(parsed_data)
+        r_result = run_xgboost(parsed_data)
         result = json.loads(list(r_result)[0])
         return response, 200
 
