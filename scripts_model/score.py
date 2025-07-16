@@ -9,10 +9,14 @@ def run_xgboost(json_input):
     
     # Convert the dictionary to a DataFrame
     data_df = pd.DataFrame(data_dict)
+
+    # Separate features and labels
+    features = data_df.drop('label', axis=1)
+    labels = data_df['label']
     
     # Prepare data for XGBoost
-    dmatrix = xgb.DMatrix(data_df)
-    
+    dmatrix = xgb.DMatrix(features, label=labels)
+
     # Load or define your XGBoost model
     # For demonstration, we'll create a simple model
     params = {
@@ -32,7 +36,7 @@ def run_xgboost(json_input):
     return output_json
 
 # Example usage
-#json_input = '{"feature1": [1, 2, 3], "feature2": [4, 5, 6]}'
-#output_json = run_xgboost(json_input)
+#json_input = '{"feature1": [1, 2, 3], "feature2": [4, 5, 6],"label": [7, 8, 9]}'
+#output_json '[7.598736763000488, 8.0, 8.401262283325195]'
 print("Input JSON:", json_input)
 print("Output JSON:", output_json)
