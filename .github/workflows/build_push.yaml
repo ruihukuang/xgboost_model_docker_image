@@ -53,7 +53,7 @@ jobs:
     - name: Check if ECR Repository Exists
       id: check_repo
       run: |
-        if aws ecr-public describe-repositories --repository-names ${{ env.ECR_REPOSITORY }}  --region ${{ env.REGION }} ; then
+        if aws ecr-public describe-repositories --repository-names ${{ env.ECR_REPOSITORY }}  ; then
           echo "repository_exists=true" >> $GITHUB_ENV
         else
           echo "repository_exists=false" >> $GITHUB_ENV
@@ -62,12 +62,12 @@ jobs:
     - name: Create a Public ECR Repository for Model Artifacts
       if: env.repository_exists == 'false'
       run: |
-        aws ecr-public create-repository --repository-name ${{ env.ECR_REPOSITORY }} --region ${{ env.REGION }} 
+        aws ecr-public create-repository --repository-name ${{ env.ECR_REPOSITORY }} 
 
     - name: Set Repository Policy
       if: env.repository_exists == 'false'
       run: |
-        aws ecr-public set-repository-policy --repository-name ${{ env.ECR_REPOSITORY }} --region ${{ env.REGION }}  --policy-text '{
+        aws ecr-public set-repository-policy --repository-name ${{ env.ECR_REPOSITORY }}  --policy-text '{
           "Version": "2008-10-17",
           "Statement": [
             {
@@ -104,7 +104,7 @@ jobs:
       id: check_image_model
       run: |
         set -e
-        if aws ecr-public describe-images --repository-name ${{ env.ECR_REPOSITORY }} --image-ids imageTag=python-3.11 --region ${{ env.REGION }} ; then
+        if aws ecr-public describe-images --repository-name ${{ env.ECR_REPOSITORY }} --image-ids imageTag=python-3.11  ; then
           echo "image_exists_model=true" >> $GITHUB_ENV
         else
           echo "image_exists_model=false" >> $GITHUB_ENV
@@ -113,14 +113,14 @@ jobs:
     - name: check image tages if an image exists
       if: env.image_exists_model == 'true'
       run: |
-        output=$(aws ecr describe-images --repository-name "${{ env.ECR_REPOSITORY }}" --region "${{ env.REGION }}")
+        output=$(aws ecr describe-images --repository-name "${{ env.ECR_REPOSITORY }}" )
         matching_images=$(echo "$output" | jq -r '.imageDetails[].imageTags[] | select(endswith("_xgboost"))')
 
         # Check if any matching images were found
         if [ -n "$matching_images" ]; then
           echo "Found images with tags ending in _xgboost:"
           echo "$matching_images"
-          aws ecr batch-delete-image --repository-name ${{ env.ECR_REPOSITORY }} --image-ids imageTag=$matching_images --region ${{ env.REGION }}
+          aws ecr batch-delete-image --repository-name ${{ env.ECR_REPOSITORY }} --image-ids imageTag=$matching_images 
          else
            echo "No images found with tags ending in _xgboost."
         fi
