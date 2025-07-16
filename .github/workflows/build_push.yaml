@@ -102,7 +102,7 @@ jobs:
         
     - name: check if an docker image for model artifacts exists and act accordingly
       run: |
-        output=$(aws ecr describe-images --repository-name "${{ env.ECR_REPOSITORY }}" --region us-east-1 )
+        output=$(aws ecr-public describe-images --repository-name ${{ env.ECR_REPOSITORY }} --region us-east-1 )
         matching_images=$(echo "$output" | jq -r '.imageDetails[].imageTags[] | select(endswith("_xgboost"))')
 
         # Check if any matching images were found
