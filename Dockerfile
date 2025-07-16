@@ -23,4 +23,4 @@ EXPOSE 8000
 # Prometheus metrics port
 EXPOSE 8001  
 
-CMD ["gunicorn", "-b", "0.0.0.0:8000", "scripts_nonmodel.wsgi:app"]
+CMD ["gunicorn", "-c", "gunicorn_config.py", "scripts_nonmodel.wsgi:app"]
