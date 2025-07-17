@@ -1,4 +1,4 @@
-import scripts_nonmodel.predictor as myapp
+import scripts_nonmodel.predition as myapp
 
 # This is just a simple wrapper for gunicorn to find your app.
 # If you want to change the algorithm file, simply change "predictor" above to the
