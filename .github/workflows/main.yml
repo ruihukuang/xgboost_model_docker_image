@@ -1,0 +1,132 @@
+name: Build and Push Docker Image to ECR in main branch
+
+on:
+  workflow_dispatch:
+
+env:
+  ECR_REGISTRY: public.ecr.aws
+  ECR_REPOSITORY: ${{ secrets.RESPOSITORY_NAME }} 
+  REGION: ${{ secrets.AWS_REGION }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.REGION }} 
+
+    - name: Run AWS CLI Command
+      run: |
+        aws s3 ls
+
+    - name: Install jq
+      run: sudo apt-get install jq
+  
+    - name: Update IAM Policy
+      run: |
+        POLICY_NAME="MyCustomPolicy_Cloudformation_IAM"
+        POLICY_ARN=$(aws iam list-policies --query "Policies[?PolicyName=='$POLICY_NAME'].Arn" --output text)
+        
+        if [ -z "$POLICY_ARN" ]; then
+          echo "Policy not found. Creating new policy."
+          POLICY_ARN=$(aws iam create-policy --policy-name $POLICY_NAME --policy-document file://Policy/Cloudformation_IAM.json --query 'Policy.Arn' --output text)
+          aws iam attach-user-policy --user-name Janice --policy-arn $POLICY_ARN
+        else
+          echo "Policy already exists. No action needed."
+        fi
+
+        aws iam attach-user-policy --user-name Janice --policy-arn $POLICY_ARN   
+
+    - name: Log in to Amazon ECR
+      run: |
+        docker logout public.ecr.aws
+        aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
+
+    - name: Check if ECR Repository Exists
+      id: check_repo
+      run: |
+        if aws ecr-public describe-repositories --repository-names ${{ env.ECR_REPOSITORY }} --region us-east-1 ; then
+          echo "repository_exists=true" >> $GITHUB_ENV
+        else
+          echo "repository_exists=false" >> $GITHUB_ENV
+        fi
+        
+    - name: Create a Public ECR Repository for Model Artifacts
+      if: env.repository_exists == 'false'
+      run: |
+        aws ecr-public create-repository --repository-name ${{ env.ECR_REPOSITORY }} --region us-east-1
+
+    - name: Set Repository Policy
+      if: env.repository_exists == 'false'
+      run: |
+        aws ecr-public set-repository-policy --repository-name ${{ env.ECR_REPOSITORY }} --region us-east-1 --policy-text '{
+          "Version": "2008-10-17",
+          "Statement": [
+            {
+              "Sid": "AllowPublicRead",
+              "Effect": "Allow",
+              "Principal": "*",
+              "Action": [
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage",
+                "ecr:BatchCheckLayerAvailability"
+              ]
+            }
+          ]
+        }'     
+
+    - name: Check if a basic python image exists in ECR
+      id: check_image
+      run: |
+        set -e
+        if aws ecr-public describe-images --repository-name ${{ env.ECR_REPOSITORY }} --region us-east-1 --image-ids imageTag=python-3.11 --region us-east-1 ; then
+          echo "image_exists=true" >> $GITHUB_ENV
+        else
+          echo "image_exists=false" >> $GITHUB_ENV
+        fi
+
+    - name: Pull, Tag, and Push if a basic python image does not exist in ECR
+      if: env.image_exists == 'false'
+      run: |   
+        docker pull python:3.11
+        docker tag python:3.11 ${{ env.ECR_REGISTRY }}/v3z5t7a3/${{ env.ECR_REPOSITORY }}:python-3.11
+        docker push ${{ env.ECR_REGISTRY }}/v3z5t7a3/${{ env.ECR_REPOSITORY }}:python-3.11
+        
+    - name: check if an docker image for model artifacts exists and act accordingly
+      run: |
+        output=$(aws ecr-public describe-images --repository-name ${{ env.ECR_REPOSITORY }} --region us-east-1 )
+        matching_images=$(echo "$output" | jq -r '.imageDetails[].imageTags[] | select(endswith("_xgboost"))')
+
+        # Check if any matching images were found
+        if [ -n "$matching_images" ]; then
+          echo "Found images with tags ending in _xgboost:"
+          echo "$matching_images"
+              # Loop through each matching image tag and delete it
+          for tag in $matching_images; do
+            aws ecr-public batch-delete-image --repository-name ${{ env.ECR_REPOSITORY }} --region us-east-1 --image-ids imageTag="$tag"
+          done
+         else
+           echo "No images found with tags ending in _xgboost."
+        fi
+        
+    - name: Build, tag, and push image to Amazon ECR if an docker image for model artifacts does not exist
+      env:
+        IMAGE_TAG: ${{ github.sha }}_xgboost
+      run: |
+        docker build -t $IMAGE_TAG  .
+        docker tag $IMAGE_TAG ${{ env.ECR_REGISTRY }}/v3z5t7a3/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
+        docker push ${{ env.ECR_REGISTRY }}/v3z5t7a3/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
+
+    - name:Test an image in Amazon ECR  
+      env:
+        IMAGE_TAG: ${{ github.sha }}_xgboost
+      run: |
+        docker run ${{ env.ECR_REGISTRY }}/v3z5t7a3/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
