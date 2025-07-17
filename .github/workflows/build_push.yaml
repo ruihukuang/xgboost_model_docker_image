@@ -124,3 +124,9 @@ jobs:
         docker build -t $IMAGE_TAG  .
         docker tag $IMAGE_TAG ${{ env.ECR_REGISTRY }}/v3z5t7a3/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
         docker push ${{ env.ECR_REGISTRY }}/v3z5t7a3/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
+
+    - name:Test an image in Amazon ECR  
+      env:
+        IMAGE_TAG: ${{ github.sha }}_xgboost
+      run: |
+        docker run ${{ env.ECR_REGISTRY }}/v3z5t7a3/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
