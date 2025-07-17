@@ -39,4 +39,4 @@ def run_xgboost(json_input):
 #json_input = '{"feature1": [1, 2, 3], "feature2": [4, 5, 6],"label": [7, 8, 9]}'
 #output_json '[7.598736763000488, 8.0, 8.401262283325195]'
 #print("Input JSON:", json_input)
-print("Output JSON:", output_json)
+#print("Output JSON:", output_json)
