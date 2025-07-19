@@ -132,4 +132,21 @@ jobs:
       env:
         IMAGE_TAG: ${{ github.sha }}_xgboost
       run: |
-        docker run ${{ env.ECR_REGISTRY }}/v3z5t7a3/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
+        docker run ${{ env.ECR_REGISTRY }}/v3z5t7a3/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG --name gunicorn_app gunicorn_app
+
+    - name: Wait for Gunicorn to start 
+      run: |
+        sleep 60
+
+    - name: Run tests
+      run: |
+        curl --fail http://0.0.0.0:8000/ping || exit
+
+    - name: Stop docker containers
+      run: | 
+        docker stop gunicorn_app
+
+    - name: Remove docker containers
+      run: |
+        docker rm gunicorn_app
+    
