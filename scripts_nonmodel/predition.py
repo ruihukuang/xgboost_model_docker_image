@@ -64,20 +64,22 @@ def invocations():
     Expects JSON input and returns JSON output.
     """
     try:
-        content_type = request.headers.get("Content-Type", "application/json").lower()
+        content_type = request.headers.get("Content-Type", "").lower()
 
         if content_type == "application/json":
             data = request.get_json()
-            parsed_data = json.dumps(data)
+            # Assuming score.run_xgboost expects a dictionary
+            parsed_data = data
         else:
             raise ValueError(f"Unsupported Content-Type: {content_type}")
 
         r_result = score.run_xgboost(parsed_data)
         result = json.loads(list(r_result)[0])
-        return response, 200
+        return jsonify(result), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 def collect_metrics():
     # Update CPU and memory usage
