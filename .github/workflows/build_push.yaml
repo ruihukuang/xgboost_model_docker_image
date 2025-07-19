@@ -132,7 +132,7 @@ jobs:
       env:
         IMAGE_TAG: ${{ github.sha }}_xgboost
       run: |
-        docker run ${{ env.ECR_REGISTRY }}/v3z5t7a3/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG --name gunicorn_app gunicorn_app
+        docker run ${{ env.ECR_REGISTRY }}/v3z5t7a3/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG --name gunicorn_app
 
     - name: Wait for Gunicorn to start 
       run: |
