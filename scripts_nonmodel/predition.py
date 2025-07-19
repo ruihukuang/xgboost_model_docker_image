@@ -68,12 +68,12 @@ def invocations():
 
         if content_type == "application/json":
             data = request.get_json()
-            # Assuming score.run_xgboost expects a dictionary
-            parsed_data = data
+            # Convert the dictionary to a JSON string
+            json_string = json.dumps(data)
         else:
             raise ValueError(f"Unsupported Content-Type: {content_type}")
 
-        r_result = score.run_xgboost(parsed_data)
+        r_result = score.run_xgboost(json_string)
         result = json.loads(list(r_result)[0])
         return jsonify(result), 200
 
