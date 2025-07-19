@@ -3,8 +3,21 @@ import json
 import os
 from prometheus_client import start_http_server, Summary, Gauge, Counter
 import psutil
-# Import the function from score.py
-from scripts_model.score import run_xgboost
+import sys
+
+# Get the absolute path of the current script's directory
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Get the path of the parent directory
+parent_dir = os.path.join(current_dir, '..')
+
+# Add the parent directory to sys.path
+sys.path.insert(0, parent_dir)
+
+
+
+from scripts_model import score
+
 
 app = Flask(__name__)
 
@@ -59,7 +72,7 @@ def invocations():
         else:
             raise ValueError(f"Unsupported Content-Type: {content_type}")
 
-        r_result = run_xgboost(parsed_data)
+        r_result = score.run_xgboost(parsed_data)
         result = json.loads(list(r_result)[0])
         return response, 200
 
