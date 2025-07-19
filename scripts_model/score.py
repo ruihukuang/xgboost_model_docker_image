@@ -42,19 +42,6 @@ def run_xgboost(json_input):
 # Example usage
 #json_input = '{"feature1": [1, 2, 3], "feature2": [4, 5, 6],"label": [7, 8, 9]}'
 #json_input = '{"feature1": ["1", "2", "3"], "feature2": ["4", "5", "6"], "label": ["7", "8", "9"]}'
-
-# Load the JSON into a dictionary
-data_dict = json.loads(json_input)
-
-# Convert string values to floats
-for key in data_dict:
-    data_dict[key] = [float(value) for value in data_dict[key]]
-
-# Convert the dictionary to a DataFrame
-data_df = pd.DataFrame(data_dict)
-
-# Display the DataFrame
-print(data_df)
 #output_json '[7.598736763000488, 8.0, 8.401262283325195]'
 #print("Input JSON:", json_input)
 #print("Output JSON:", output_json)
