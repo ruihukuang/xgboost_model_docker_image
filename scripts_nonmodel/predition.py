@@ -74,7 +74,7 @@ def invocations():
             raise ValueError(f"Unsupported Content-Type: {content_type}")
 
         r_result = score.run_xgboost(json_string)
-        result = json.loads(list(r_result)[0])
+        result = json.loads(output_json)
         return jsonify(result), 200
 
     except Exception as e:
