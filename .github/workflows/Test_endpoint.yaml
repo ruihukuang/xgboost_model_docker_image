@@ -1,4 +1,4 @@
-name: Build and Push Docker Image to ECR
+name: Test an endpoint
 
 on:
   workflow_dispatch:
