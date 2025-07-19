@@ -9,7 +9,6 @@ COPY . /app
 
 RUN apt-get update && apt-get install -y \
     libssl-dev \
-    nginx \
     libxml2-dev
 
 # Install Python dependencies
