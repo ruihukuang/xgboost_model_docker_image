@@ -1,2 +1,4 @@
 kuangru@AsusM3:~$ curl -H "Content-Type: application/json" --data @data.json -X POST http://127.0.0.1:8080/invocations
 {"error":"Expecting value: line 1 column 2 (char 1)"}
+
+curl -H "Content-Type: application/json" -d '{"feature1": ["1", "2", "3"], "feature2": ["4", "5", "6"], "label": ["7", "8", "9"]}' -X POST http://127.0.0.1:8080/invocations
