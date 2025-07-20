@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 import json
 import os
-from prometheus_client import start_http_server, Summary, Gauge, Counter
+from prometheus_client import start_http_server, Summary, Gauge, Counter, generate_latest
 import psutil
 import sys
 
