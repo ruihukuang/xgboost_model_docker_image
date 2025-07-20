@@ -80,7 +80,7 @@ def invocations():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
+@app.route("/metrics")
 def collect_metrics():
     # Update CPU and memory usage
     CPU_USAGE.set(psutil.cpu_percent())
@@ -90,7 +90,7 @@ def collect_metrics():
     net_io = psutil.net_io_counters()
     NETWORK_IO.labels(direction='in').inc(net_io.bytes_recv)
     NETWORK_IO.labels(direction='out').inc(net_io.bytes_sent)
-
+    return generate_latest()
 
 if __name__ == "__main__":
     # Start up the server to expose metrics
