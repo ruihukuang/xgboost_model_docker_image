@@ -14,6 +14,8 @@ To achieve this goal, the following repos are created for different purposes.
 5 Deploy prometheus and grafana into EKS to monitor a guincorn app based on step 1. The related repo is https://github.com/ruihukuang/prometheus_grafana_Argo_Helm.  
 
 
+<img width="2926" height="3840" alt="Untitled diagram _ Mermaid Chart-2025-07-26-002954" src="https://github.com/user-attachments/assets/0b6c5eb6-b7e9-4a77-92cf-459ca88c0faa" />
+
 
 
 
