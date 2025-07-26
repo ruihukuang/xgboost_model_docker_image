@@ -14,6 +14,10 @@ To achieve this goal, the following repos are created for different purposes.
 5 Deploy prometheus and grafana into EKS to monitor a guincorn app based on step 1. The related repo is https://github.com/ruihukuang/prometheus_grafana_Argo_Helm.  
 
 
+Purpose and deployment are shown in the graph below. 
+
+<img width="1329" height="754" alt="image" src="https://github.com/user-attachments/assets/ced92650-5519-473f-9179-d009bcf79543" />
+
 
 
 results for this repo:
