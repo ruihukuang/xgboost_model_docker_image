@@ -16,12 +16,9 @@ To achieve this goal, the following repos are created for different purposes.
 
 Purposes of this project and deployment related elements are shown in the graph below. 
 
-<img width="1330" height="752" alt="image" src="https://github.com/user-attachments/assets/eac5b1c3-e0ed-4b62-b647-ee81f8e03a3f" />
+<img width="1330" height="752" alt="image" src="https://github.com/user-attachments/assets/eac5b1c3-e0ed-4b62-b647-ee81f8e03a3f" />    
 
-
-
-
-results for this repo:
+Results for this repo:
 
 <img width="989" height="424" alt="image" src="https://github.com/user-attachments/assets/6d8da0c1-4491-4cde-98d5-8302eb22f4fc" />
 
