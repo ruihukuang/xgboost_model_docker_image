@@ -8,9 +8,9 @@ This repo is a part of a project. This project is to receive requests from a sou
 
 To achieve this goal, the following repos are created for different purposes.    
 1 A docker image of a Gunicorn flask app is created and pushed into ECR in this repo.   
-2 Deploy a EKS cluster in private subnets in VPC with a Nat gateway and an internet gateway. The EKS is used to run a Gunicorn flask app based on the step 1. The related repo is https://github.com/ruihukuang/EKS_XGboost  
-3 Deploy a bastion host in public subnet in EC2 to interact with the EKS cluster in step 2 using kubectl. This bastion host is used to deploy the Gunicorn flask app based on the step 1 into the EKS created in step 2. The related repo is https://github.com/ruihukuang/Cognito_kubectl_AWS  
-4 Deploy nginx as a load balancer and a guincorn app based on step 1 into EKS created in step 2 using Argo, Helm, kubectl on the bastion host created in step 3. The URL of this nginx load balaner is used to receive requests from a source AWS account. Th guincorn apps are used to process requests, do calcuation based on a xgboost model and provide prediction results. The related repo is https://github.com/ruihukuang/Argo_Helm_Xgboost_EKS  
+2 Deploy a EKS cluster in private subnets in VPC with a Nat gateway and an internet gateway. The EKS is used to run a Gunicorn flask app based on the step 1. The related repo is https://github.com/ruihukuang/EKS_XGboost.  
+3 Deploy a bastion host in public subnet in EC2 to interact with the EKS cluster in step 2 using kubectl. This bastion host is used to deploy the Gunicorn flask app based on the step 1 into the EKS created in step 2. The related repo is https://github.com/ruihukuang/Cognito_kubectl_AWS.  
+4 Deploy nginx as a load balancer and a guincorn app based on step 1 into EKS created in step 2 using Argo, Helm, kubectl on the bastion host created in step 3. The URL of this nginx load balaner is used to receive requests from a source AWS account. Th guincorn apps are used to process requests, do calcuation based on a xgboost model and provide prediction results. The related repo is https://github.com/ruihukuang/Argo_Helm_Xgboost_EKS.  
 5 Deploy Prometheus and Grafana into EKS and create a dashborad in Grafana to monitor a guincorn app based on step 1. The related repo is https://github.com/ruihukuang/prometheus_grafana_Argo_Helm.  
 
 
