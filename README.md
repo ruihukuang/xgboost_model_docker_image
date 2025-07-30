@@ -25,7 +25,8 @@ Repository: https://github.com/ruihukuang/prometheus_grafana_Argo_Helm
 
 Purposes of this project and deployment related elements are shown in the graph below. 
 
-<img width="1334" height="749" alt="image" src="https://github.com/user-attachments/assets/d08614a1-b4c7-4041-931d-0c2d79be6067" />
+<img width="1324" height="751" alt="image" src="https://github.com/user-attachments/assets/374cb6bb-010b-4b56-8261-6f515c3c2392" />
+
 
 
 
